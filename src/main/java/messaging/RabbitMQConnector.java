@@ -6,7 +6,6 @@ import com.rabbitmq.client.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenario.implementations.CheckoutWhilePriceUpdateScenario;
 import scenario.interfaces.ScenarioInterface;
 import utilities.LogEvents;
 
@@ -39,11 +38,10 @@ public class RabbitMQConnector {
         return instance;
     }
 
-    public Connection getConnection() throws IOException, TimeoutException {
+    public void getConnection() throws IOException, TimeoutException {
         if(connection == null){
             connect();
         }
-        return connection;
     }
 
     private void connect() throws IOException, TimeoutException {
@@ -69,6 +67,7 @@ public class RabbitMQConnector {
         channel.exchangeDeclare(exchangeName, "direct", false);
         queueName = channel.queueDeclare().getQueue();  //RabbitMQ assigns and sets a non durable queue.
         //Listen for all the Routing Keys
+        // TODO: Add ability to bind events based on scenarios.
         channel.queueBind(queueName, exchangeName, "OrderStartedIntegrationEvent");
         channel.queueBind(queueName, exchangeName, "ProductPriceChangedIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToAwaitingValidationIntegrationEvent");

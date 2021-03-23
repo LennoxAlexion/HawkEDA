@@ -16,7 +16,6 @@ public class ConcurrentCheckoutStmt {
 //        String stmt = "select count(*) from pattern [every a=EventDTO(eventName = UserCheckoutAcceptedIntegrationEvent) -> (timer:interval(120 sec) and EventDTO(eventName=a.OrderStatusChangedToPaidIntegrationEvent)] group by eventName";
         String stmt = "select eventName, count(eventName) as count from EventDTO where eventName = \"OrderStatusChangedToPaidIntegrationEvent\" group by eventName";
         CompilerArguments compilerArguments = new CompilerArguments(configuration);
-//        compilerArguments.getOptions().setAccessModifierEventType(env -> NameAccessModifier.PUBLIC);
 
         try {
             EPCompiled compiled = EPCompilerProvider.getCompiler().compile(stmt, compilerArguments);

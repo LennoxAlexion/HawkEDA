@@ -2,7 +2,6 @@ package cep.result;
 
 import cep.dto.EventDTO;
 import com.espertech.esper.common.client.EventBean;
-import com.espertech.esper.common.client.PropertyAccessException;
 import com.espertech.esper.runtime.client.EPRuntime;
 import com.espertech.esper.runtime.client.EPStatement;
 import com.espertech.esper.runtime.client.UpdateListener;
@@ -35,7 +34,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                 countOutdatedPrices = 0;
             } else {
                 eventDTO = (EventDTO) event.get("checkout");
-                Float eventPrice = eventDTO.getMessageBody().getJSONObject("Basket").getJSONArray("Items").getJSONObject(0).getFloat("UnitPrice");
+                float eventPrice = eventDTO.getMessageBody().getJSONObject("Basket").getJSONArray("Items").getJSONObject(0).getFloat("UnitPrice");
                 if (eventDTO != null &&
                         priceUpdateTimestamp != null &&
                         Instant.parse(eventDTO.getTimestamp()).compareTo(priceUpdateTimestamp) > 0 &&

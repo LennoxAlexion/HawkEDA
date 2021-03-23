@@ -16,8 +16,6 @@ public class CheckoutWhilePriceUpdateStmt {
 //        String stmt = "select * from EventDTO where eventName = \"UserCheckoutAcceptedIntegrationEvent\" or eventName = \"ProductPriceChangedIntegrationEvent\""
         String stmt = "select priceUpdate2, checkout from pattern [priceUpdate1 = EventDTO(eventName =\"ProductPriceChangedIntegrationEvent\") -> every (priceUpdate2 = EventDTO(eventName = \"ProductPriceChangedIntegrationEvent\") or checkout = EventDTO(eventName = \"UserCheckoutAcceptedIntegrationEvent\"))]";
         CompilerArguments compilerArguments = new CompilerArguments(configuration);
-//        compilerArguments.getOptions().setAccessModifierEventType(env -> NameAccessModifier.PUBLIC);
-
         try {
             EPCompiled compiled = EPCompilerProvider.getCompiler().compile(stmt, compilerArguments);
             epStatement = epDeploymentService.deploy(compiled).getStatements()[0];

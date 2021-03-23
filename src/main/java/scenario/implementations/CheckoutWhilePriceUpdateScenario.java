@@ -1,7 +1,6 @@
 package scenario.implementations;
 
 import cep.CEP;
-import messaging.RabbitMQConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scenario.interfaces.ScenarioInterface;
@@ -9,8 +8,6 @@ import scenario.interfaces.ScenarioInterface;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static scenario.implementations.eShopHelper.*;
 
@@ -30,7 +27,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     public void initScenario() {
         //Initialize price and stock.
         initDefaultItemStock(10000, oldPrice);
-        int numberOfUsers = 100;
+        int numberOfUsers = 10;
 
         userIds = new ArrayList<>();
         for(int i =0; i <numberOfUsers; i++){

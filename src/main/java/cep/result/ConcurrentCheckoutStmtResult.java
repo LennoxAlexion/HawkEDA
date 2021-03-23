@@ -17,7 +17,6 @@ public class ConcurrentCheckoutStmtResult implements UpdateListener {
             return;
         }
 
-//        log.info("A total of {} New event(s) received in ConcurrentCheckoutStmtResult at {}.", newEvents.length, new java.util.Date());
         log.info("-------CEP Analysis (ConcurrentCheckoutStmtResult)-------");
         for (EventBean event : newEvents) {
             log.info("---------------------Result---------------------------");

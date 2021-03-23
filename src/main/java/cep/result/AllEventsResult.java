@@ -17,7 +17,6 @@ public class AllEventsResult implements UpdateListener {
             return;
         }
 
-//        log.info("A total of {} New event(s) received in AllEventsResult at {}.", newEvents.length, new java.util.Date());
         log.info("-------CEP Analysis (AllEventsResult)-------");
         for (EventBean event : newEvents) {
             log.info("---------------------Event---------------------------");
