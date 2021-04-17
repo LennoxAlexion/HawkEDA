@@ -1,5 +1,6 @@
 package utilities;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -14,6 +15,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class HTTPRestHelper {
     public static void HTTPGet(String url){
         HttpGet httpGet = new HttpGet(url);
@@ -21,7 +23,7 @@ public class HTTPRestHelper {
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpResponse response = httpClient.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
-            System.out.println("HTTP Get " + url + " Status Code: " + statusCode);
+            log.info("HTTP Get " + url + " Status Code: " + statusCode);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,7 +45,7 @@ public class HTTPRestHelper {
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpResponse response = httpClient.execute(httpPost);
             int statusCode = response.getStatusLine().getStatusCode();
-            System.out.println("HTTP Post " + url + " Status Code: " + statusCode);
+            log.info("HTTP Post " + url + " Status Code: " + statusCode);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,7 +60,7 @@ public class HTTPRestHelper {
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpResponse response = httpClient.execute(httpPut);
             int statusCode = response.getStatusLine().getStatusCode();
-            System.out.println("HTTP Put " + url + " Status Code: " + statusCode);
+            log.info("HTTP Put " + url + " Status Code: " + statusCode);
         } catch (IOException e) {
             e.printStackTrace();
         }

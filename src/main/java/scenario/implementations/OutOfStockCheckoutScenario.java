@@ -13,27 +13,28 @@ import java.util.UUID;
 
 import static scenario.implementations.EShopHelper.*;
 
-public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
-    private static final Logger log = LoggerFactory.getLogger(CheckoutWhilePriceUpdateScenario.class);
+public class OutOfStockCheckoutScenario implements ScenarioInterface {
+    private static final Logger log = LoggerFactory.getLogger(OutOfStockCheckoutScenario.class);
 
     private List<UUID> userIds;
 
     @Override
-    public void registerCEPQueries(ArrayList<String> args, CEP cep){
-        checkoutWhilePriceUpdateCEP(cep);
+    public void registerCEPQueries(ArrayList<String> args, CEP cep) {
+        EShopHelper.concurrentCheckoutCEP(cep);
     }
 
     @Override
     public void initScenario(ArrayList<String> args) {
-        //Initialize price and stock.
-        addCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 10000, DEFAULT_PRODUCT_PRICE);
-        ArrayList<CatalogItem> catalogItems = generateCatalogItem(50);
+        // Args: [Number of Users]
+        //Initialize stock.
+        addCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 1, DEFAULT_PRODUCT_PRICE);
+        ArrayList<CatalogItem> catalogItems = generateCatalogItem(20);
 
         // Create users
         userIds = createUsersFromArgs(args);
 
         // add the default product to all the users and add other generated items to basket reasonably from the catalog item.
-        for (UUID userId : userIds){
+        for (UUID userId : userIds) {
             UUID basketId = UUID.randomUUID();
             ArrayList<BasketItem> basketItems = generateBasketItemsFromCatalog(basketId, catalogItems, 10);
             BasketItem defaultBasketItem = new BasketItem(basketId, DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, DEFAULT_PRODUCT_PRICE, 1);
@@ -44,8 +45,6 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
 
     @Override
     public void execute(ArrayList<String> args) {
-        // Update the price of the product to 250
-        updateCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 10000, 250);
         checkoutUsersConcurrent(userIds, log);
     }
 }

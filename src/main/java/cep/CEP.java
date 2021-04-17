@@ -16,11 +16,9 @@ import org.slf4j.LoggerFactory;
 public class CEP {
 
     private static final Logger log = LoggerFactory.getLogger(CEP.class);
-
     private static CEP instance = null;
 
     private Configuration configuration;
-
     private EPRuntime runtime;
 
     private CEP() {}
@@ -42,12 +40,11 @@ public class CEP {
         return configuration;
     }
 
-    public EPRuntime setupEPRuntime(){
+    public void setupEPRuntime(){
         Configuration config = getCEPConfig();
         log.info("Setting up CEP runtime");
         runtime = EPRuntimeProvider.getRuntime("CEP", config);
-        runtime.initialize();
-        return runtime;
+//        runtime.initialize();
     }
 
     public EPRuntime getEPRuntime(){
@@ -55,24 +52,5 @@ public class CEP {
             setupEPRuntime();
         }
         return runtime;
-    }
-
-    private EPCompiled compileEPL(Configuration configuration, String stmt) {
-        log.info("Compiling EPL");
-        EPCompiled compiled;
-        try {
-            compiled = EPCompilerProvider.getCompiler().compile( stmt, new CompilerArguments(configuration));
-        } catch (EPCompileException ex) {
-            throw new RuntimeException(ex);
-        }
-        return compiled;
-    }
-
-    private void deploy(EPRuntime runtime, EPCompiled compiled) {
-        try {
-            runtime.getDeploymentService().deploy(compiled, new DeploymentOptions().setDeploymentId("cep"));
-        } catch (EPDeployException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

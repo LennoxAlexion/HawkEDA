@@ -14,7 +14,7 @@ public class CheckoutWhilePriceUpdateStmt {
     public CheckoutWhilePriceUpdateStmt(EPDeploymentService epDeploymentService, Configuration configuration) {
 
 //        String stmt = "select * from EventDTO where eventName = \"UserCheckoutAcceptedIntegrationEvent\" or eventName = \"ProductPriceChangedIntegrationEvent\""
-        String stmt = "select priceUpdate2, checkout from pattern [priceUpdate1 = EventDTO(eventName =\"ProductPriceChangedIntegrationEvent\") -> every (priceUpdate2 = EventDTO(eventName = \"ProductPriceChangedIntegrationEvent\") or checkout = EventDTO(eventName = \"UserCheckoutAcceptedIntegrationEvent\"))]";
+        String stmt = "SELECT priceUpdate, checkout FROM PATTERN [priceUpdate = EventDTO(eventName =\"ProductPriceChangedIntegrationEvent\") -> EVERY (checkout = EventDTO(eventName = \"UserCheckoutAcceptedIntegrationEvent\"))]";
         CompilerArguments compilerArguments = new CompilerArguments(configuration);
         try {
             EPCompiled compiled = EPCompilerProvider.getCompiler().compile(stmt, compilerArguments);

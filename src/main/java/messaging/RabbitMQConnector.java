@@ -9,26 +9,41 @@ import org.slf4j.LoggerFactory;
 import scenario.interfaces.ScenarioInterface;
 import utilities.LogEvents;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
 public class RabbitMQConnector {
     private static final Logger log = LoggerFactory.getLogger(RabbitMQConnector.class);
 
     private static RabbitMQConnector instance = null;
-    // TODO: Move this to properties file.
-    final private static String userName = "guest";
-    final private static String password = "guest";
-    final private static String virtualHost = "/";
-    final private static String hostName = "localhost";
-    final private static int portNumber = 5672;
+    private String userName;
+    private String password;
+    private String virtualHost;
+    private String hostName;
+    private int portNumber;
 
     private static Connection connection = null;
     private static String queueName;
 
-    private RabbitMQConnector() {
+    private RabbitMQConnector(){
+        try (InputStream input = RabbitMQConnector.class.getClassLoader().getResourceAsStream("rabbitmq.properties")) {
+            Properties properties = new Properties();
+            properties.load(input);
+            userName = properties.getProperty("username");
+            password = properties.getProperty("password");
+            virtualHost = properties.getProperty("virtualhost");
+            hostName = properties.getProperty("hostname");
+            portNumber = Integer.parseInt(properties.getProperty("port"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            //Set default connection settings maybe
+        }
     }
 
     public static RabbitMQConnector getInstance() {
@@ -39,7 +54,7 @@ public class RabbitMQConnector {
     }
 
     public void getConnection() throws IOException, TimeoutException {
-        if(connection == null){
+        if (connection == null) {
             connect();
         }
     }
@@ -53,7 +68,7 @@ public class RabbitMQConnector {
         factory.setPort(portNumber);
 
         connection = factory.newConnection();
-        System.out.println("Successfully connected to RabbitMQ at " + new java.util.Date());
+        log.info("Successfully connected to RabbitMQ at " + new java.util.Date());
     }
 
     private void closeConnection(Channel channel) throws IOException, TimeoutException {
@@ -62,32 +77,37 @@ public class RabbitMQConnector {
         connection.close();
     }
 
+    // Assign only the events required for CEP processing.
     private Channel setExchangeConfiguration(String exchangeName) throws IOException {
         Channel channel = connection.createChannel();
         channel.exchangeDeclare(exchangeName, "direct", false);
         queueName = channel.queueDeclare().getQueue();  //RabbitMQ assigns and sets a non durable queue.
         //Listen for all the Routing Keys
         // TODO: Add ability to bind events based on scenarios.
-        channel.queueBind(queueName, exchangeName, "OrderStartedIntegrationEvent");
+        channel.queueBind(queueName, exchangeName, ScenarioInterface.ScenarioInitEvent);
+        channel.queueBind(queueName, exchangeName, ScenarioInterface.ScenarioExecuteEvent);
+//        channel.queueBind(queueName, exchangeName, "OrderStartedIntegrationEvent");
         channel.queueBind(queueName, exchangeName, "ProductPriceChangedIntegrationEvent");
+//        channel.queueBind(queueName, exchangeName, "OrderStockRejectedIntegrationEvent");
+//        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToPaidIntegrationEvent");
+//        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToAwaitingValidationIntegrationEvent");
+//        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToSubmittedIntegrationEvent");
+        channel.queueBind(queueName, exchangeName, "UserCheckoutAcceptedIntegrationEvent");
+
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToAwaitingValidationIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "GracePeriodConfirmedIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderPaymentFailedIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderPaymentSucceededIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStockConfirmedIntegrationEvent");
-        channel.queueBind(queueName, exchangeName, "OrderStockRejectedIntegrationEvent");
-        channel.queueBind(queueName, exchangeName, "UserCheckoutAcceptedIntegrationEvent");
-        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToPaidIntegrationEvent");
-        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToAwaitingValidationIntegrationEvent");
+
+
+
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToCancelledIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToShippedIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToStockConfirmedIntegrationEvent");
-        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToSubmittedIntegrationEvent");
 
-        channel.queueBind(queueName, exchangeName, ScenarioInterface.ScenarioInitEvent);
-        channel.queueBind(queueName, exchangeName, ScenarioInterface.ScenarioExecuteEvent);
 
-        System.out.println("[*] Queue " + queueName + " is bound and listening for messages.");
+        log.info("[*] Queue " + queueName + " is bound and listening for messages.");
         return channel;
     }
 
@@ -99,7 +119,7 @@ public class RabbitMQConnector {
 //            System.out.println("Rabbit Event: Routing Key = " + routingKey + ", Body = " + body);
             //  Send events to CEP.
             JSONObject bodyJson = new JSONObject(body);
-            log.info("Routing Key:" + routingKey + "\nBody JSON of message: " + bodyJson.toString() + "\n");
+            log.info("Routing Key:" + routingKey + "\nBody JSON of message: " + bodyJson + "\n");
             EventDTO eventDTO = new EventDTO(routingKey, bodyJson.getString("CreationDate"), bodyJson);
             CEP.getInstance().getEPRuntime().getEventService().sendEventBean(eventDTO, "EventDTO");
 
@@ -110,7 +130,7 @@ public class RabbitMQConnector {
         });
     }
 
-    public void listenToeShopEvents(){
+    public void listenToeShopEvents() {
         String exchangeName = "eshop_event_bus";
         try {
             instance.getConnection();
@@ -121,11 +141,11 @@ public class RabbitMQConnector {
         }
     }
 
-    public void publishEvent(String routingKey){
+    public void publishEvent(String routingKey) {
         String exchangeName = "eshop_event_bus";
         try {
             instance.getConnection();
-            Channel channel =  connection.createChannel(); //, queueName, routingKey);
+            Channel channel = connection.createChannel(); //, queueName, routingKey);
             channel.exchangeDeclare(exchangeName, "direct");
 
             JSONObject message = new JSONObject();
@@ -138,18 +158,3 @@ public class RabbitMQConnector {
         }
     }
 }
-
-
-// get these info from rabbitmq http api:
-//    ExchangeName = "eshop_event_bus"
-//    QueueName RoutingKey
-//    Basket OrderStartedIntegrationEvent
-//    Basket ProductPriceChangedIntegrationEvent
-//    Catalog OrderStatusChangedToAwaitingValidationIntegrationEvent
-//    Catalog OrderStatusChangedToPaidIntegrationEvent
-//    Ordering GracePeriodConfirmedIntegrationEvent
-//    Ordering OrderPaymentFailedIntegrationEvent
-//    Ordering OrderPaymentSucceededIntegrationEvent
-//    Ordering OrderStockConfirmedIntegrationEvent
-//    Ordering OrderStockRejectedIntegrationEvent
-//    Ordering UserCheckoutAcceptedIntegrationEvent

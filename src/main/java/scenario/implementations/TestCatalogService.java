@@ -14,18 +14,19 @@ import org.json.JSONObject;
 import scenario.interfaces.ScenarioInterface;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TestCatalogService implements ScenarioInterface {
 
     @Override
-    public void registerCEPQueries(CEP cep){
+    public void registerCEPQueries(ArrayList<String> args, CEP cep){
         AllEventsStmt allEventsStmt = new AllEventsStmt(cep.getEPRuntime().getDeploymentService(), cep.getCEPConfig());
         AllEventsResult allEventsResult = new AllEventsResult();
         allEventsStmt.addListener(allEventsResult);
     }
 
     @Override
-    public void initScenario() {
+    public void initScenario(ArrayList<String> args) {
         final String URL = "http://localhost:5101/api/v1/Catalog/items";
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpUriRequest httpUriRequest = new HttpGet(URL);
@@ -44,6 +45,6 @@ public class TestCatalogService implements ScenarioInterface {
     }
 
     @Override
-    public void execute() {
+    public void execute(ArrayList<String> args) {
     }
 }
