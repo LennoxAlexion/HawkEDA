@@ -9,17 +9,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scenario.implementations.CheckoutWhilePriceUpdateScenario;
 
 import java.time.Instant;
-
-import static scenario.implementations.EShopHelper.DEFAULT_PRODUCT_ID;
-import static scenario.implementations.EShopHelper.DEFAULT_PRODUCT_PRICE;
+import java.util.HashMap;
 
 public class CheckoutWhilePriceUpdateResult implements UpdateListener {
     private static final Logger log = LoggerFactory.getLogger(cep.result.ConcurrentCheckoutStmtResult.class);
     private int countOutdatedPrices = 0;
     private Instant priceUpdateTimestamp;
+    final private HashMap<Integer, Float> updatedPriceList = new HashMap<>();
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement epStatement, EPRuntime epRuntime) {
         if (newEvents == null || newEvents.length == 0) {
@@ -32,23 +30,23 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             log.info("---------------------Result---------------------------");
             log.info(event.getUnderlying().toString());
 
-            EventDTO eventDTO = (EventDTO) event.get("checkout");
-            float eventPrice = 0;
-            if (eventDTO != null) {
+            EventDTO eventDTO = (EventDTO) event.getUnderlying();
+            if ("ProductPriceChangedIntegrationEvent".equals(eventDTO.getEventName())) {
+                updatedPriceList.put(eventDTO.getMessageBody().getInt("ProductId"), eventDTO.getMessageBody().getFloat("NewPrice"));
+            } else if ("UserCheckoutAcceptedIntegrationEvent".equals(eventDTO.getEventName())) {
                 JSONArray itemsJsonArray = eventDTO.getMessageBody().getJSONObject("Basket").getJSONArray("Items");
 
+                // Check if all the items present in the basket has the latest price.
                 for (int i = 0; i < itemsJsonArray.length(); i++) {
                     JSONObject item = itemsJsonArray.getJSONObject(i);
-                    if (item.get("ProductId").equals(DEFAULT_PRODUCT_ID)) {
-                        eventPrice = item.getFloat("UnitPrice");
-                        break;
+                    int productId = item.getInt("ProductId");
+                    if (updatedPriceList.containsKey(productId) &&
+                            updatedPriceList.get(productId) != item.getFloat("UnitPrice")) {
+                        countOutdatedPrices++;
                     }
                 }
-                if (eventPrice == DEFAULT_PRODUCT_PRICE) {
-                    countOutdatedPrices++;
-                }
             }
-            System.out.println("The current count of orders placed with outdated prices is " + countOutdatedPrices + " Ordered Price: " + eventPrice);
+            System.out.println("The current count of items ordered with outdated price is " + countOutdatedPrices + " Updated Items: " + updatedPriceList);
             // AssertExpected can be used to stop.
         }
         log.info("---------------------------------------------------------\n");

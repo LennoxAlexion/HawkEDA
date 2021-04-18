@@ -27,7 +27,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     public void initScenario(ArrayList<String> args) {
         //Initialize price and stock.
         addCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 10000, DEFAULT_PRODUCT_PRICE);
-        ArrayList<CatalogItem> catalogItems = generateCatalogItem(50);
+        ArrayList<CatalogItem> catalogItems = generateCatalogItem(200);
 
         // Create users
         userIds = createUsersFromArgs(args);
@@ -45,7 +45,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     @Override
     public void execute(ArrayList<String> args) {
         // Update the price of the product to 250
-        updateCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 10000, 250);
+        updateCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 10000, 115);
         checkoutUsersConcurrent(userIds, log);
     }
 }

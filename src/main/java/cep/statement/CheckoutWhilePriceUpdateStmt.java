@@ -13,8 +13,8 @@ public class CheckoutWhilePriceUpdateStmt {
 
     public CheckoutWhilePriceUpdateStmt(EPDeploymentService epDeploymentService, Configuration configuration) {
 
-//        String stmt = "select * from EventDTO where eventName = \"UserCheckoutAcceptedIntegrationEvent\" or eventName = \"ProductPriceChangedIntegrationEvent\""
-        String stmt = "SELECT priceUpdate, checkout FROM PATTERN [priceUpdate = EventDTO(eventName =\"ProductPriceChangedIntegrationEvent\") -> EVERY (checkout = EventDTO(eventName = \"UserCheckoutAcceptedIntegrationEvent\"))]";
+        String stmt = "select * from EventDTO where eventName = \"UserCheckoutAcceptedIntegrationEvent\" or eventName = \"ProductPriceChangedIntegrationEvent\"";
+//        String stmt = "SELECT priceUpdate, checkout FROM PATTERN [priceUpdate = EventDTO(eventName =\"ProductPriceChangedIntegrationEvent\") -> EVERY (checkout = EventDTO(eventName = \"UserCheckoutAcceptedIntegrationEvent\"))]";
         CompilerArguments compilerArguments = new CompilerArguments(configuration);
         try {
             EPCompiled compiled = EPCompilerProvider.getCompiler().compile(stmt, compilerArguments);
