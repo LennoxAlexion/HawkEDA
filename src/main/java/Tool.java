@@ -1,21 +1,20 @@
 import cep.CEP;
 import messaging.RabbitMQConnector;
-import scenario.implementations.CheckoutWhilePriceUpdateScenario;
-import scenario.implementations.SingleBasketMultipleCheckoutScenario;
-import scenario.implementations.OutOfStockCheckoutScenario;
-import scenario.implementations.TestCatalogService;
 import scenario.interfaces.ScenarioInterface;
+import utilities.LogEvents;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 @lombok.extern.slf4j.Slf4j
 public class Tool {
     private CEP cep;
 
     public static void main(String[] args) {
-        System.out.println("Started at: " + new java.util.Date());
+        Date startTime = new java.util.Date();
+        System.out.println("Started at: " + startTime);
         ScenarioInterface scenarioInterface = null;
 
         // Get the scenario implementation for the passed args.
@@ -34,6 +33,7 @@ public class Tool {
                 + parameters);
 
         Tool tool = new Tool();
+        tool.setupLogger(scenarioInterface, startTime, parameters);
 
         // Initialize RabbitMQ connector for eShopOnContainers.
         // TODO: Replace this with a more generic one.
@@ -46,12 +46,12 @@ public class Tool {
         scenarioInterface.registerCEPQueries(parameters, tool.cep);
         scenarioInterface.initScenario(parameters);
 
-//        try {
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        RabbitMQConnector.getInstance().publishEvent(ScenarioInterface.ScenarioExecuteEvent);
         scenarioInterface.execute(parameters);
     }
 
@@ -68,5 +68,12 @@ public class Tool {
         cep = CEP.getInstance();
         cep.getCEPConfig();
         cep.getEPRuntime();
+    }
+
+    private void setupLogger(ScenarioInterface scenarioInterface, Date startDate, ArrayList<String> params){
+        LogEvents.scenarioName = scenarioInterface.getClass().getSimpleName();
+        LogEvents.parameters = String.join(".", params);
+        LogEvents.startDate = startDate.toString().replaceAll(" ",
+                "_").replaceAll(":",".");
     }
 }

@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import scenario.interfaces.ScenarioInterface;
 import utilities.LogEvents;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,14 +30,14 @@ public class RabbitMQConnector {
     private static String queueName;
 
     private RabbitMQConnector(){
-        try (InputStream input = RabbitMQConnector.class.getClassLoader().getResourceAsStream("rabbitmq.properties")) {
+        try (InputStream input = RabbitMQConnector.class.getClassLoader().getResourceAsStream("tool.properties")) {
             Properties properties = new Properties();
             properties.load(input);
-            userName = properties.getProperty("username");
-            password = properties.getProperty("password");
-            virtualHost = properties.getProperty("virtualhost");
-            hostName = properties.getProperty("hostname");
-            portNumber = Integer.parseInt(properties.getProperty("port"));
+            userName = properties.getProperty("rabbitmq.username");
+            password = properties.getProperty("rabbitmq.password");
+            virtualHost = properties.getProperty("rabbitmq.virtualhost");
+            hostName = properties.getProperty("rabbitmq.hostname");
+            portNumber = Integer.parseInt(properties.getProperty("rabbitmq.port"));
         } catch (IOException e) {
             e.printStackTrace();
             //Set default connection settings maybe
@@ -123,7 +121,7 @@ public class RabbitMQConnector {
             EventDTO eventDTO = new EventDTO(routingKey, bodyJson.getString("CreationDate"), bodyJson);
             CEP.getInstance().getEPRuntime().getEventService().sendEventBean(eventDTO, "EventDTO");
 
-            LogEvents.appendToJsonArray(eventDTO.toJSONObject());
+            LogEvents.writeEventToLog(eventDTO.toJSONObject());
 
         }, (CancelCallback) consumerTag -> {
 //            Handle Cancel scenarios.

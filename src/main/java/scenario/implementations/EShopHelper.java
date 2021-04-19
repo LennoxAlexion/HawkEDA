@@ -8,7 +8,11 @@ import cep.statement.AllEventsStmt;
 import cep.statement.CheckoutWhilePriceUpdateStmt;
 import cep.statement.ConcurrentCheckoutStmt;
 import com.github.javafaker.Faker;
-import messaging.RabbitMQConnector;
+import com.yahoo.ycsb.WorkloadException;
+import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
+import com.yahoo.ycsb.generator.NumberGenerator;
+import com.yahoo.ycsb.generator.UniformLongGenerator;
+import com.yahoo.ycsb.generator.ZipfianGenerator;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
@@ -17,10 +21,9 @@ import scenario.implementations.entities.Basket;
 import scenario.implementations.entities.BasketItem;
 import scenario.implementations.entities.CatalogItem;
 import scenario.implementations.entities.UserDetail;
-import scenario.interfaces.ScenarioInterface;
-import utilities.*;
-
+import utilities.HTTPRestHelper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -32,18 +35,19 @@ public class EShopHelper {
     private static final String BASKET_API_URL = "http://localhost:5103/api/v1/Basket/";
     public static final int DEFAULT_PRODUCT_ID = 8;
     public static final String DEFAULT_PRODUCT_NAME = "Default Product";
-    public static final float DEFAULT_PRODUCT_PRICE = 100;
+    public static final float DEFAULT_PRODUCT_PRICE = 10;
     public static final int DEFAULT_PRODUCT_QUANTITY = 1000;
-
-//    private static HashMap<UUID, UserDetails> userDetails;
 
     public static void addCatalogItem(int productId, String productName, int quantity, float price) {
         // Add/replace the catalog item based on productId
         CatalogItem catalogItem = new CatalogItem(productId, productName, quantity, price);
         JSONObject requestBody = catalogItem.toJSON();
-        // String requestBodyJSONString = "{\"id\":8,\"name\":\"Kudu Purple Hoodie\",\"description\":\"Kudu Purple Hoodie\",\"price\":" + price + ",\"pictureFileName\":\"8.png\",\"pictureUri\":\"http://host.docker.internal:5202/c/api/v1/catalog/items/8/pic/\",\"catalogTypeId\":2,\"catalogType\":null,\"catalogBrandId\":5,\"catalogBrand\":null,\"availableStock\":" + quantity + ",\"restockThreshold\":0,\"maxStockThreshold\":0,\"onReorder\":false}";
-        // HTTPRestHelper.HTTPPut(CATALOG_API_URL + "items", requestBody.toString());
-//        System.out.println("updateCatalogItem request body: " + requestBody.toString());
+        HTTPRestHelper.HTTPPost(CATALOG_API_URL + "items", requestBody.toString(), new ArrayList<>());
+    }
+
+    public static void addCatalogItem(CatalogItem catalogItem) {
+        // Add/replace the catalog item based on productId
+        JSONObject requestBody = catalogItem.toJSON();
         HTTPRestHelper.HTTPPost(CATALOG_API_URL + "items", requestBody.toString(), new ArrayList<>());
     }
 
@@ -62,22 +66,22 @@ public class EShopHelper {
         HTTPRestHelper.HTTPPost(BASKET_API_URL, basket.toJSON().toString(), new ArrayList<>());
     }
 
-    public static ArrayList<CatalogItem> generateCatalogItem(int catalogSize) {
-        ArrayList<CatalogItem> catalogItems = new ArrayList<>();
-        int itemId = 5000;
-        for (int i = 0; i < catalogSize; i++) {
+    public static HashMap<Integer, CatalogItem> generateCatalogItem(int catalogSize) {
+        HashMap<Integer, CatalogItem> catalogItems = new HashMap<>();
+        for (int itemId = 1; itemId <= catalogSize; itemId++) {
             Faker faker = new Faker();
-            itemId += 1;
             String productName = faker.commerce().productName();
             float price = faker.number().numberBetween(10, 500);
             CatalogItem catalogItem = new CatalogItem(itemId, productName, 10000, price);
-            catalogItems.add(catalogItem);
-            addCatalogItem(itemId, productName, 10000, price);
+            catalogItems.put(itemId, catalogItem);
+            addCatalogItem(catalogItem);
         }
         return catalogItems;
     }
 
-    public static ArrayList<BasketItem> generateBasketItemsFromCatalog(UUID basketId, ArrayList<CatalogItem> catalogItems, int maxBasketSize) {
+    public static ArrayList<BasketItem> generateBasketItemsFromCatalog(UUID basketId,
+                                                                       HashMap<Integer, CatalogItem> catalogItems,
+                                                                       int maxBasketSize) {
         //Generate basket items with varying size and different catalog items in it.
         ArrayList<BasketItem> basketItems = new ArrayList<>();
         int basketLimit = Math.min(catalogItems.size(), maxBasketSize);
@@ -94,10 +98,25 @@ public class EShopHelper {
         return basketItems;
     }
 
+    public static ArrayList<BasketItem> generateBasketItemsFromCatalog(UUID basketId,
+                                                                       HashMap<Integer, CatalogItem> catalogItems,
+                                                                       NumberGenerator itemKeyChooser) {
+        //Generate basket item of size 1 and different catalog items in it.
+        ArrayList<BasketItem> basketItems = new ArrayList<>();
+        Faker faker = new Faker();
+        //Item is selected using given distribution.
+        int catalogIndex = Integer.parseInt(itemKeyChooser.nextString()) + 1;
+        basketItems.add(new BasketItem(basketId,
+                catalogItems.get(catalogIndex).id,
+                catalogItems.get(catalogIndex).name,
+                catalogItems.get(catalogIndex).price,
+                faker.number().numberBetween(1, 10)));
+        return basketItems;
+    }
+
     public static void checkout(UUID userId) {
         //Add user details and checkout the basket for the user.
         String requestIdStr = UUID.randomUUID().toString();
-        //        String requestBodyJSONString = "{ \"city\": \"Gotham\", \"street\": \"Mountain Drive\", \"state\": \"NA\", \"country\": \"USA\", \"zipCode\": \"1007\", \"cardNumber\": \"1234567890123456\", \"cardHolderName\": \"Batman\", \"cardExpiration\": \"2022-03-02T00:00:00\", \"cardSecurityNumber\": \"123\", \"cardTypeId\": 1, \"buyer\": \""+ userId.toString() +"\", \"requestId\": \"" + requestIdStr + "\" }";
 
         UserDetail userDetails = new UserDetail(userId);
         JSONObject requestBody = userDetails.toJSON();
@@ -110,12 +129,12 @@ public class EShopHelper {
     }
 
     public static void checkoutUsersConcurrent(List<UUID> userIds, Logger log) {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+//        System.out.println("CPU Cores: " + Runtime.getRuntime().availableProcessors() + " max memory: " + Runtime.getRuntime().maxMemory());
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         for (UUID userId : userIds) {
             executorService.execute(() -> {
                 log.info("Concurrently checking out user: " + userId);
-                RabbitMQConnector.getInstance().publishEvent(ScenarioInterface.ScenarioExecuteEvent);
                 checkout(userId);
             });
         }
@@ -134,22 +153,33 @@ public class EShopHelper {
         checkoutWhilePriceUpdateStmt.addListener(checkoutWhilePriceUpdateResult);
     }
 
-    //TODO:delete
     public static void allEventsCEP(CEP cep) {
         AllEventsStmt allEventsStmt = new AllEventsStmt(cep.getEPRuntime().getDeploymentService(), cep.getCEPConfig());
         AllEventsResult allEventsResult = new AllEventsResult();
         allEventsStmt.addListener(allEventsResult);
     }
 
-    public static List<UUID> createUsersFromArgs(ArrayList<String> args){
-        int numberOfUsers = 0;
-        if (args.size() > 0){
-            numberOfUsers = Integer.parseInt(args.get(0));
-        }
+    public static List<UUID> createUsersFromArgs(int numberOfUsers) {
         List<UUID> userIds = new ArrayList<>();
         for (int i = 0; i < numberOfUsers; i++) {
             userIds.add(UUID.randomUUID());
         }
         return userIds;
+    }
+
+    // From YCSB
+    public static NumberGenerator getKeyChooser(String requestDistrib, int size, double zipfContant) throws WorkloadException {
+        NumberGenerator keychooser;
+
+        if ("uniform".equals(requestDistrib)) {
+            keychooser = new UniformLongGenerator(0, size - 1);
+        } else if ("zipfian".equals(requestDistrib)) {
+            keychooser = new ZipfianGenerator(size, zipfContant);
+        } else if ("stress".equals(requestDistrib)) {
+            keychooser = new ConstantIntegerGenerator(0);
+        } else {
+            throw new WorkloadException("Unknown request distribution \"" + requestDistrib + "\"");
+        }
+        return keychooser;
     }
 }

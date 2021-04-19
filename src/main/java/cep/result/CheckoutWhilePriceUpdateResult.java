@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utilities.LogEvents;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             EventDTO eventDTO = (EventDTO) event.getUnderlying();
             if ("ProductPriceChangedIntegrationEvent".equals(eventDTO.getEventName())) {
                 updatedPriceList.put(eventDTO.getMessageBody().getInt("ProductId"), eventDTO.getMessageBody().getFloat("NewPrice"));
+
             } else if ("UserCheckoutAcceptedIntegrationEvent".equals(eventDTO.getEventName())) {
                 JSONArray itemsJsonArray = eventDTO.getMessageBody().getJSONObject("Basket").getJSONArray("Items");
 
@@ -43,11 +45,22 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                     if (updatedPriceList.containsKey(productId) &&
                             updatedPriceList.get(productId) != item.getFloat("UnitPrice")) {
                         countOutdatedPrices++;
+                        log.warn("Old product ordered." +
+                                " RequestId " + eventDTO.getMessageBody().getString("RequestId") +
+                                " Product Id: "+ productId +
+                                " Old Price: " + item.getFloat("UnitPrice") +
+                                " New Price: " + updatedPriceList.get(productId));
                     }
                 }
             }
-            System.out.println("The current count of items ordered with outdated price is " + countOutdatedPrices + " Updated Items: " + updatedPriceList);
-            // AssertExpected can be used to stop.
+            System.out.println(eventDTO.getEventName() +
+                    " Event. The current count of items ordered with outdated price is "
+                    + countOutdatedPrices
+                    + " Updated Items: "
+                    + updatedPriceList);
+            JSONObject resultLogObj = new JSONObject();
+            resultLogObj.put("Outdated Items Ordered", countOutdatedPrices);
+            LogEvents.writeResultToLog(resultLogObj);
         }
         log.info("---------------------------------------------------------\n");
     }

@@ -19,6 +19,13 @@
         <CGLIB.version>3.2.5</CGLIB.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>ImageJ</id>
+            <url>https://maven.imagej.net/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- CEP -->
         <!-- http://www.espertech.com/esper/esper-downloads/ -->
@@ -147,6 +154,12 @@
             <version>1.0.2</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.brianfrankcooper.YCSB/core -->
+        <dependency>
+            <groupId>com.github.brianfrankcooper.YCSB</groupId>
+            <artifactId>core</artifactId>
+            <version>1.13.0-RC1</version>
+        </dependency>
 
     </dependencies>
 

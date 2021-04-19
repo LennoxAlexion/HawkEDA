@@ -1,47 +1,86 @@
 package utilities;
 
+import messaging.RabbitMQConnector;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Date;
+import java.util.Properties;
 
 public class LogEvents {
     private static final Logger log = LoggerFactory.getLogger(LogEvents.class);
 
-    private static BufferedWriter bufferedWriter;
-    private static JSONArray jsonArray;
+    private static JSONArray eventsLogJSONArray;
 
-    private static void getWriter() throws IOException {
-//        if (bufferedWriter == null) {
-            bufferedWriter = new BufferedWriter(new FileWriter("./src/main/java/logs/All_Event_Log.json", false));
-//        }
+    public static String scenarioName = "";
+    public static String parameters = "";
+    public static String startDate = new java.util.Date().toString();
+
+    public static void writeEventToLog(JSONObject jsonObject) {
+        try {
+            BufferedWriter bufferedWriter = getWriter("Events");
+            appendToEventsLog(bufferedWriter, jsonObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public static void appendToJsonArray(JSONObject jsonObject) throws IOException {
-        getWriter();
-        if(jsonArray == null){
-            jsonArray = new JSONArray();
+    public static void writeResultToLog(JSONObject jsonObject) {
+        try {
+            BufferedWriter bufferedWriter = getWriter("Result");
+            bufferedWriter.write(jsonObject.toString());
+            // TODO: flush only after closing connection.
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        jsonArray.put(jsonObject);
-        bufferedWriter.write(jsonArray.toString());
+    }
+
+    private static BufferedWriter getWriter(String eventLogFileName) throws IOException {
+
+        String defaultLogPath = LogEvents.class.getResource("..") + "logs" + File.separator ;
+        String logPath;
+
+        try (InputStream input = LogEvents.class.getClassLoader().getResourceAsStream("tool.properties")) {
+            Properties properties = new Properties();
+            properties.load(input);
+            logPath = properties.getProperty("logger.path");
+        } catch (IOException e) {
+            e.printStackTrace();
+            logPath = defaultLogPath;
+        }
+
+        String directoryPath = logPath.concat(scenarioName);
+        File directory = new File(directoryPath);
+        if (! directory.exists()){
+            if(! directory.mkdir()){
+                directoryPath = logPath;
+            }
+        }
+
+        return new BufferedWriter(new FileWriter(
+                directoryPath
+                        + File.separator
+                        + parameters
+                        + "-"
+                        + eventLogFileName
+                        + "-"
+                        + startDate
+                        + ".json", false));
+    }
+
+    private static void appendToEventsLog(BufferedWriter bufferedWriter,
+                                          JSONObject jsonObjectInput) throws IOException {
+        if (eventsLogJSONArray == null) {
+            eventsLogJSONArray = new JSONArray();
+        }
+        eventsLogJSONArray.put(jsonObjectInput);
+        bufferedWriter.write(eventsLogJSONArray.toString());
         // TODO: flush only after closing connection.
         bufferedWriter.flush();
-    }
-
-    public static void flushLog() throws IOException {
-        if(bufferedWriter != null){
-            bufferedWriter.flush();
-        }
-    }
-
-    public static void logString(String content) throws IOException {
-        getWriter();
-        bufferedWriter.write(content);
-        bufferedWriter.flush();
-        log.info("Successfully updated events to the log file...");
     }
 }

@@ -8,6 +8,7 @@ import scenario.implementations.entities.BasketItem;
 import scenario.implementations.entities.CatalogItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ public class OutOfStockCheckoutScenario implements ScenarioInterface {
     private static final Logger log = LoggerFactory.getLogger(OutOfStockCheckoutScenario.class);
 
     private List<UUID> userIds;
+    private int numberOfUsers = 0;
 
     @Override
     public void registerCEPQueries(ArrayList<String> args, CEP cep) {
@@ -25,13 +27,13 @@ public class OutOfStockCheckoutScenario implements ScenarioInterface {
 
     @Override
     public void initScenario(ArrayList<String> args) {
-        // Args: [Number of Users]
+        parseArgs(args);
         //Initialize stock.
         addCatalogItem(DEFAULT_PRODUCT_ID, DEFAULT_PRODUCT_NAME, 1, DEFAULT_PRODUCT_PRICE);
-        ArrayList<CatalogItem> catalogItems = generateCatalogItem(20);
+        HashMap<Integer, CatalogItem> catalogItems = generateCatalogItem(20);
 
         // Create users
-        userIds = createUsersFromArgs(args);
+        userIds = createUsersFromArgs(numberOfUsers);
 
         // add the default product to all the users and add other generated items to basket reasonably from the catalog item.
         for (UUID userId : userIds) {
@@ -46,5 +48,15 @@ public class OutOfStockCheckoutScenario implements ScenarioInterface {
     @Override
     public void execute(ArrayList<String> args) {
         checkoutUsersConcurrent(userIds, log);
+    }
+
+    private void parseArgs(ArrayList<String> args){
+        // args: [Number of Users: Integer]
+        try {
+            numberOfUsers = Integer.parseInt(args.get(0));
+        } catch (Exception e) {
+            numberOfUsers = 0;
+            e.printStackTrace();
+        }
     }
 }
