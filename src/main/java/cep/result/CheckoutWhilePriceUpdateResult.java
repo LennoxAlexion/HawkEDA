@@ -47,11 +47,13 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                         countOutdatedPrices++;
                         log.warn("Old product ordered." +
                                 " RequestId " + eventDTO.getMessageBody().getString("RequestId") +
-                                " Product Id: "+ productId +
+                                " Product Id: " + productId +
                                 " Old Price: " + item.getFloat("UnitPrice") +
                                 " New Price: " + updatedPriceList.get(productId));
                     }
                 }
+            } else {
+                return;
             }
             System.out.println(eventDTO.getEventName() +
                     " Event. The current count of items ordered with outdated price is "
