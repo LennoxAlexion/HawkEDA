@@ -87,7 +87,7 @@ public class RabbitMQConnector {
 //        channel.queueBind(queueName, exchangeName, "OrderStartedIntegrationEvent");
         channel.queueBind(queueName, exchangeName, "ProductPriceChangedIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStockRejectedIntegrationEvent");
-//        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToPaidIntegrationEvent");
+        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToPaidIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToAwaitingValidationIntegrationEvent");
 //        channel.queueBind(queueName, exchangeName, "OrderStatusChangedToSubmittedIntegrationEvent");
         channel.queueBind(queueName, exchangeName, "UserCheckoutAcceptedIntegrationEvent");
