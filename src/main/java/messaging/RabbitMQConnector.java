@@ -69,9 +69,7 @@ public class RabbitMQConnector {
         log.info("Successfully connected to RabbitMQ at " + new java.util.Date());
     }
 
-    private void closeConnection(Channel channel) throws IOException, TimeoutException {
-//        channel.basicCancel(consumerTag);
-        channel.close();
+    public void closeConnection() throws IOException {
         connection.close();
     }
 

@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utilities.LogEvents;
+import utilities.StopToolExecution;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             JSONObject resultLogObj = new JSONObject();
             resultLogObj.put("Outdated Items Ordered", countOutdatedPrices);
             LogEvents.writeResultToLog(resultLogObj);
+            StopToolExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
     }

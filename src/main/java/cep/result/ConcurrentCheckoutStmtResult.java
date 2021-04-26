@@ -7,6 +7,7 @@ import com.espertech.esper.runtime.client.UpdateListener;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utilities.StopToolExecution;
 
 public class ConcurrentCheckoutStmtResult implements UpdateListener {
     private static final Logger log = LoggerFactory.getLogger(ConcurrentCheckoutStmtResult.class);
@@ -24,6 +25,7 @@ public class ConcurrentCheckoutStmtResult implements UpdateListener {
             JSONObject eventJSONObj = new JSONObject(event.getUnderlying().toString().replace('=',':'));
             System.out.println("The current count for event "+ eventJSONObj.getString("eventName") + " is " + eventJSONObj.getInt("count"));
             // AssertExpected can be used to stop.
+            StopToolExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
     }
