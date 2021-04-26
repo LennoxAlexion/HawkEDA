@@ -21,7 +21,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     private String distribution = "uniform";
     private float itemUpdateProportion = 0;
     private HashMap<Integer, CatalogItem> catalogItems;
-    private final int catalogSize = 50;
+    private final int catalogSize = 100;
 
     @Override
     public void registerCEPQueries(ArrayList<String> args, CEP cep) {
