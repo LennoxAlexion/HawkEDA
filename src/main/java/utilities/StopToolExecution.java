@@ -44,7 +44,7 @@ public class StopToolExecution {
             }
         };
 
-        long delay = 180000L; // 3 minutes
+        long delay = 120000L; // 2 minutes
         timer.schedule(task, delay);
     }
 }
