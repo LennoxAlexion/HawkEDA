@@ -8,6 +8,7 @@ import scenario.interfaces.ScenarioInterface;
 import scenario.implementations.entities.BasketItem;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +22,7 @@ public class SingleBasketMultipleCheckoutScenario implements ScenarioInterface {
 
     @Override
     public void registerCEPQueries(ArrayList<String> args, CEP cep) {
-      concurrentCheckoutCEP(cep);
+        concurrentCheckoutCEP(cep);
     }
 
     @Override
@@ -39,19 +40,14 @@ public class SingleBasketMultipleCheckoutScenario implements ScenarioInterface {
 
     @Override
     public void execute(ArrayList<String> args) {
-        int numberOfThreads = 0;
-        if (args.size() > 0){
-            numberOfThreads = Integer.parseInt(args.get(0));
+        int numberOfCheckouts = 0;
+        if (args.size() > 0) {
+            numberOfCheckouts = Integer.parseInt(args.get(0));
         }
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-
-        for (int i = 0; i < numberOfThreads; i++) {
-            executorService.execute(() -> {
-                log.info("Concurrently checking out user: " + userId);
-                RabbitMQConnector.getInstance().publishEvent(ScenarioInterface.ScenarioExecuteEvent);
-                checkout(userId);
-            });
+        List<UUID> userIdToCheckout = new ArrayList<>();
+        for (int i = 0; i < numberOfCheckouts; i++) {
+            userIdToCheckout.add(userId);
         }
-        executorService.shutdown();
+        checkoutUsersConcurrent(userIdToCheckout, log);
     }
 }

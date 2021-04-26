@@ -13,6 +13,7 @@ import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
 import com.yahoo.ycsb.generator.NumberGenerator;
 import com.yahoo.ycsb.generator.UniformLongGenerator;
 import com.yahoo.ycsb.generator.ZipfianGenerator;
+import messaging.RabbitMQConnector;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
@@ -22,10 +23,10 @@ import scenario.implementations.entities.BasketItem;
 import scenario.implementations.entities.CatalogItem;
 import scenario.implementations.entities.UserDetail;
 import utilities.HTTPRestHelper;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -130,7 +131,15 @@ public class EShopHelper {
 
     public static void checkoutUsersConcurrent(List<UUID> userIds, Logger log) {
 //        System.out.println("CPU Cores: " + Runtime.getRuntime().availableProcessors() + " max memory: " + Runtime.getRuntime().maxMemory());
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        int nThreads = 10;
+        try (InputStream input = EShopHelper.class.getClassLoader().getResourceAsStream("tool.properties")) {
+            Properties properties = new Properties();
+            properties.load(input);
+            nThreads = Integer.parseInt(properties.getProperty("executors.nThreads"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
 
         for (UUID userId : userIds) {
             executorService.execute(() -> {
