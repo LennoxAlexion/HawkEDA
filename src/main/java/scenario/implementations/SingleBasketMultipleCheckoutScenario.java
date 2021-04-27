@@ -1,22 +1,18 @@
 package scenario.implementations;
 
 import cep.CEP;
-import messaging.RabbitMQConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scenario.interfaces.ScenarioInterface;
+import lombok.extern.slf4j.Slf4j;
 import scenario.implementations.entities.BasketItem;
+import scenario.interfaces.ScenarioInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static scenario.implementations.EShopHelper.*;
 
+@Slf4j
 public class SingleBasketMultipleCheckoutScenario implements ScenarioInterface {
-    private static final Logger log = LoggerFactory.getLogger(SingleBasketMultipleCheckoutScenario.class);
 
     private UUID userId;
 

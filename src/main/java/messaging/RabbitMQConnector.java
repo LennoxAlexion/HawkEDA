@@ -3,11 +3,10 @@ package messaging;
 import cep.CEP;
 import cep.dto.EventDTO;
 import com.rabbitmq.client.*;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import scenario.interfaces.ScenarioInterface;
-import utilities.LogEvents;
+import logger.WriteLog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +15,8 @@ import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 public class RabbitMQConnector {
-    private static final Logger log = LoggerFactory.getLogger(RabbitMQConnector.class);
 
     private static RabbitMQConnector instance = null;
     private String userName;
@@ -119,7 +118,7 @@ public class RabbitMQConnector {
             EventDTO eventDTO = new EventDTO(routingKey, bodyJson.getString("CreationDate"), bodyJson);
             CEP.getInstance().getEPRuntime().getEventService().sendEventBean(eventDTO, "EventDTO");
 
-            LogEvents.writeEventToLog(eventDTO.toJSONObject());
+            WriteLog.writeEventToLog(eventDTO.toJSONObject());
 
         }, (CancelCallback) consumerTag -> {
 //            Handle Cancel scenarios.

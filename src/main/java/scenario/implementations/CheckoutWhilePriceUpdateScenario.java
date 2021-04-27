@@ -3,25 +3,27 @@ package scenario.implementations;
 import cep.CEP;
 import com.yahoo.ycsb.WorkloadException;
 import com.yahoo.ycsb.generator.NumberGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import scenario.implementations.entities.BasketItem;
 import scenario.implementations.entities.CatalogItem;
 import scenario.interfaces.ScenarioInterface;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import static scenario.implementations.EShopHelper.*;
 
+@Slf4j
 public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
-    private static final Logger log = LoggerFactory.getLogger(CheckoutWhilePriceUpdateScenario.class);
 
     private List<UUID> userIds;
     private int numberOfUsers = 0;
     private String distribution = "uniform";
     private float itemUpdateProportion = 0;
     private HashMap<Integer, CatalogItem> catalogItems;
-    private final int catalogSize = 100;
+    private int catalogSize = 100;
 
     @Override
     public void registerCEPQueries(ArrayList<String> args, CEP cep) {
@@ -33,7 +35,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
         parseArgs(args);
 
         //Initialize catalog items, price and stock.
-        catalogItems = generateCatalogItem(catalogSize);
+        catalogItems = generateCatalogItem(catalogSize, 10000);
 
         // Create users
         userIds = createUsersFromArgs(numberOfUsers);
@@ -46,7 +48,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
             return;
         }
 
-        // add items to basket from the catalog item using given distribution.
+        // add items to basket from the catalog using given distribution.
         for (UUID userId : userIds) {
             UUID basketId = UUID.randomUUID();
             ArrayList<BasketItem> basketItems = generateBasketItemsFromCatalog(basketId,
@@ -92,7 +94,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     }
 
     private void parseArgs(ArrayList<String> args) {
-        // args= [number of users: int, distribution = String, Update proportion of items: int (max 100)]
+        // args= [number of users: int, distribution = String, Update proportion of items: int (max 100), Catalog Size]
         try {
             numberOfUsers = Integer.parseInt(args.get(0));
         } catch (Exception e) {
@@ -114,6 +116,12 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
             }
         } catch (Exception e) {
             itemUpdateProportion = 0;
+            e.printStackTrace();
+        }
+        try {
+            catalogSize = Integer.parseInt(args.get(3));
+        } catch (Exception e) {
+            catalogSize = 100;
             e.printStackTrace();
         }
     }

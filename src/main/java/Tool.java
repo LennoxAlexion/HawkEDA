@@ -1,14 +1,15 @@
 import cep.CEP;
+import lombok.extern.slf4j.Slf4j;
 import messaging.RabbitMQConnector;
 import scenario.interfaces.ScenarioInterface;
-import utilities.LogEvents;
+import logger.WriteLog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-@lombok.extern.slf4j.Slf4j
+@Slf4j
 public class Tool {
     private CEP cep;
 
@@ -71,9 +72,9 @@ public class Tool {
     }
 
     private void setupLogger(ScenarioInterface scenarioInterface, Date startDate, ArrayList<String> params){
-        LogEvents.scenarioName = scenarioInterface.getClass().getSimpleName();
-        LogEvents.parameters = String.join(".", params);
-        LogEvents.startDate = startDate.toString().replaceAll(" ",
+        WriteLog.scenarioName = scenarioInterface.getClass().getSimpleName();
+        WriteLog.parameters = String.join(".", params);
+        WriteLog.startDate = startDate.toString().replaceAll(" ",
                 "_").replaceAll(":",".");
     }
 }

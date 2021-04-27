@@ -5,11 +5,10 @@ import com.espertech.esper.common.client.EventBean;
 import com.espertech.esper.runtime.client.EPRuntime;
 import com.espertech.esper.runtime.client.EPStatement;
 import com.espertech.esper.runtime.client.UpdateListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AllEventsResult implements UpdateListener {
-    private static final Logger log = LoggerFactory.getLogger(AllEventsResult.class);
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement epStatement, EPRuntime epRuntime) {
         if (newEvents == null || newEvents.length == 0) {

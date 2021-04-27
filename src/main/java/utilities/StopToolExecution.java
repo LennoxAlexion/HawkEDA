@@ -1,16 +1,14 @@
 package utilities;
 
 import cep.CEP;
+import lombok.extern.slf4j.Slf4j;
 import messaging.RabbitMQConnector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@Slf4j
 public class StopToolExecution {
-    private static final Logger log = LoggerFactory.getLogger(StopToolExecution.class);
     private static StopToolExecution instance = null;
     private Timer timer;
 
@@ -44,7 +42,7 @@ public class StopToolExecution {
             }
         };
 
-        long delay = 120000L; // 2 minutes
+        long delay = 240000L; // 4 minutes
         timer.schedule(task, delay);
     }
 }

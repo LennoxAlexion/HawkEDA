@@ -2,9 +2,11 @@ package scenario.implementations;
 
 import cep.CEP;
 import cep.result.AllEventsResult;
+import cep.result.CheckoutOutOfStockResult;
 import cep.result.CheckoutWhilePriceUpdateResult;
 import cep.result.ConcurrentCheckoutStmtResult;
 import cep.statement.AllEventsStmt;
+import cep.statement.CheckoutOutOfStockStmt;
 import cep.statement.CheckoutWhilePriceUpdateStmt;
 import cep.statement.ConcurrentCheckoutStmt;
 import com.github.javafaker.Faker;
@@ -67,13 +69,13 @@ public class EShopHelper {
         HTTPRestHelper.HTTPPost(BASKET_API_URL, basket.toJSON().toString(), new ArrayList<>());
     }
 
-    public static HashMap<Integer, CatalogItem> generateCatalogItem(int catalogSize) {
+    public static HashMap<Integer, CatalogItem> generateCatalogItem(int catalogSize, int quantity) {
         HashMap<Integer, CatalogItem> catalogItems = new HashMap<>();
         for (int itemId = 1; itemId <= catalogSize; itemId++) {
             Faker faker = new Faker();
             String productName = faker.commerce().productName();
             float price = faker.number().numberBetween(10, 500);
-            CatalogItem catalogItem = new CatalogItem(itemId, productName, 10000, price);
+            CatalogItem catalogItem = new CatalogItem(itemId, productName, quantity, price);
             catalogItems.put(itemId, catalogItem);
             addCatalogItem(catalogItem);
         }
@@ -104,14 +106,13 @@ public class EShopHelper {
                                                                        NumberGenerator itemKeyChooser) {
         //Generate basket item of size 1 and different catalog items in it.
         ArrayList<BasketItem> basketItems = new ArrayList<>();
-        Faker faker = new Faker();
         //Item is selected using given distribution.
         int catalogIndex = Integer.parseInt(itemKeyChooser.nextString()) + 1;
         basketItems.add(new BasketItem(basketId,
                 catalogItems.get(catalogIndex).id,
                 catalogItems.get(catalogIndex).name,
                 catalogItems.get(catalogIndex).price,
-                faker.number().numberBetween(1, 10)));
+                1));
         return basketItems;
     }
 
@@ -154,6 +155,12 @@ public class EShopHelper {
         ConcurrentCheckoutStmt concurrentCheckoutStmt = new ConcurrentCheckoutStmt(cep.getEPRuntime().getDeploymentService(), cep.getCEPConfig());
         ConcurrentCheckoutStmtResult concurrentCheckoutStmtResult = new ConcurrentCheckoutStmtResult();
         concurrentCheckoutStmt.addListener(concurrentCheckoutStmtResult);
+    }
+
+    public static void concurrentOutOfStockCheckoutCEP(CEP cep) {
+        CheckoutOutOfStockStmt checkoutOutOfStockStmt = new CheckoutOutOfStockStmt(cep.getEPRuntime().getDeploymentService(), cep.getCEPConfig());
+        CheckoutOutOfStockResult checkoutOutOfStockResult = new CheckoutOutOfStockResult();
+        checkoutOutOfStockStmt.addListener(checkoutOutOfStockResult);
     }
 
     public static void checkoutWhilePriceUpdateCEP(CEP cep) {

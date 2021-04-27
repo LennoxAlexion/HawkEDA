@@ -5,20 +5,16 @@ import com.espertech.esper.common.client.EventBean;
 import com.espertech.esper.runtime.client.EPRuntime;
 import com.espertech.esper.runtime.client.EPStatement;
 import com.espertech.esper.runtime.client.UpdateListener;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utilities.LogEvents;
+import logger.WriteLog;
 import utilities.StopToolExecution;
-
-import java.time.Instant;
 import java.util.HashMap;
 
+@Slf4j
 public class CheckoutWhilePriceUpdateResult implements UpdateListener {
-    private static final Logger log = LoggerFactory.getLogger(cep.result.ConcurrentCheckoutStmtResult.class);
     private int countOutdatedPrices = 0;
-    private Instant priceUpdateTimestamp;
     final private HashMap<Integer, Float> updatedPriceList = new HashMap<>();
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement epStatement, EPRuntime epRuntime) {
@@ -27,7 +23,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             return;
         }
 
-        log.info("-------CEP Analysis (ConcurrentCheckoutStmtResult)-------");
+        log.info("-------CEP Analysis (" + this.getClass().getName() + ")-------");
         for (EventBean event : newEvents) {
             log.info("---------------------Result---------------------------");
             log.info(event.getUnderlying().toString());
@@ -63,7 +59,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                     + updatedPriceList);
             JSONObject resultLogObj = new JSONObject();
             resultLogObj.put("Outdated Items Ordered", countOutdatedPrices);
-            LogEvents.writeResultToLog(resultLogObj);
+            WriteLog.writeResultToLog(resultLogObj);
             StopToolExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
