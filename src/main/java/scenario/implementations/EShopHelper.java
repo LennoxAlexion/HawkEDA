@@ -191,7 +191,7 @@ public class EShopHelper {
             keychooser = new UniformLongGenerator(0, size - 1);
         } else if ("zipfian".equals(requestDistrib)) {
             keychooser = new ZipfianGenerator(size, zipfContant);
-        } else if ("stress".equals(requestDistrib)) {
+        } else if ("constant".equals(requestDistrib)) {
             keychooser = new ConstantIntegerGenerator(0);
         } else {
             throw new WorkloadException("Unknown request distribution \"" + requestDistrib + "\"");

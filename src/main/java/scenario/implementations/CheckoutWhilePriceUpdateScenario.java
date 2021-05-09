@@ -70,7 +70,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
             NumberGenerator itemToUpdateKeyChooser = getKeyChooser(distribution, catalogSize, 0.99);
 
             int updateLimit;
-            if (distribution.equals("stress")) {
+            if (distribution.equals("constant")) {
                 updateLimit = 1;
             } else {
                 updateLimit = (int) (itemUpdateProportion * catalogSize / 100);
