@@ -29,7 +29,7 @@ public class RabbitMQConnector {
     private static String queueName;
 
     private RabbitMQConnector(){
-        try (InputStream input = RabbitMQConnector.class.getClassLoader().getResourceAsStream("tool.properties")) {
+        try (InputStream input = RabbitMQConnector.class.getClassLoader().getResourceAsStream("HawkEDA.properties")) {
             Properties properties = new Properties();
             properties.load(input);
             userName = properties.getProperty("rabbitmq.username");

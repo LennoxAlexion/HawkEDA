@@ -15,7 +15,6 @@ import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
 import com.yahoo.ycsb.generator.NumberGenerator;
 import com.yahoo.ycsb.generator.UniformLongGenerator;
 import com.yahoo.ycsb.generator.ZipfianGenerator;
-import messaging.RabbitMQConnector;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
@@ -133,7 +132,7 @@ public class EShopHelper {
     public static void checkoutUsersConcurrent(List<UUID> userIds, Logger log) {
 //        System.out.println("CPU Cores: " + Runtime.getRuntime().availableProcessors() + " max memory: " + Runtime.getRuntime().maxMemory());
         int nThreads = 10;
-        try (InputStream input = EShopHelper.class.getClassLoader().getResourceAsStream("tool.properties")) {
+        try (InputStream input = EShopHelper.class.getClassLoader().getResourceAsStream("HawkEDA.properties")) {
             Properties properties = new Properties();
             properties.load(input);
             nThreads = Integer.parseInt(properties.getProperty("executors.nThreads"));

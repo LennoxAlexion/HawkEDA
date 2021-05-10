@@ -6,7 +6,7 @@ import com.espertech.esper.runtime.client.EPStatement;
 import com.espertech.esper.runtime.client.UpdateListener;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import utilities.StopToolExecution;
+import utilities.StopHawkEDAExecution;
 
 @Slf4j
 public class ConcurrentCheckoutStmtResult implements UpdateListener {
@@ -24,7 +24,7 @@ public class ConcurrentCheckoutStmtResult implements UpdateListener {
             JSONObject eventJSONObj = new JSONObject(event.getUnderlying().toString().replace('=',':'));
             System.out.println("The current count for event "+ eventJSONObj.getString("eventName") + " is " + eventJSONObj.getInt("count"));
             // AssertExpected can be used to stop.
-            StopToolExecution.getInstance().stopExecution();
+            StopHawkEDAExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
     }

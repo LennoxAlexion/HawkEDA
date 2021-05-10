@@ -33,7 +33,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.zpd.Tool.Main</mainClass>
+                                    <mainClass>org.zpd.HawkEDA.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import logger.WriteLog;
-import utilities.StopToolExecution;
+import utilities.StopHawkEDAExecution;
 import java.util.HashMap;
 
 @Slf4j
@@ -60,7 +60,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             JSONObject resultLogObj = new JSONObject();
             resultLogObj.put("Outdated Items Ordered", countOutdatedPrices);
             WriteLog.writeResultToLog(resultLogObj);
-            StopToolExecution.getInstance().stopExecution();
+            StopHawkEDAExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
     }

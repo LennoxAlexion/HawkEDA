@@ -8,15 +8,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @Slf4j
-public class StopToolExecution {
-    private static StopToolExecution instance = null;
+public class StopHawkEDAExecution {
+    private static StopHawkEDAExecution instance = null;
     private Timer timer;
 
-    private StopToolExecution() {}
+    private StopHawkEDAExecution() {}
 
-    public static StopToolExecution getInstance(){
+    public static StopHawkEDAExecution getInstance(){
         if(instance==null)
-            instance = new StopToolExecution();
+            instance = new StopHawkEDAExecution();
 
         return instance;
     }
@@ -31,7 +31,7 @@ public class StopToolExecution {
         timer = new Timer("StopTimer");
         TimerTask task = new TimerTask() {
             public void run() {
-                log.info("Stopping the execution of the Tool. New events will NOT be processed...");
+                log.info("Stopping the execution of the HawkEDA. New events will NOT be processed...");
                 try {
                     CEP.getInstance().getEPRuntime().destroy();
                     RabbitMQConnector.getInstance().closeConnection();

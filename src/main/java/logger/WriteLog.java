@@ -43,7 +43,7 @@ public class WriteLog {
         String logPath;
         FileWriter fileWriter;
 
-        try (InputStream input = WriteLog.class.getClassLoader().getResourceAsStream("tool.properties")) {
+        try (InputStream input = WriteLog.class.getClassLoader().getResourceAsStream("HawkEDA.properties")) {
             Properties properties = new Properties();
             properties.load(input);
             logPath = properties.getProperty("logger.path");

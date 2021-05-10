@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 @Slf4j
-public class Tool {
+public class HawkEDA {
     private CEP cep;
 
     public static void main(String[] args) {
@@ -33,18 +33,18 @@ public class Tool {
         log.info("Executing Scenario: " + scenarioInterface.getClass().getName() + " with parameters:"
                 + parameters);
 
-        Tool tool = new Tool();
-        tool.setupLogger(scenarioInterface, startTime, parameters);
+        HawkEDA hawkEDA = new HawkEDA();
+        hawkEDA.setupLogger(scenarioInterface, startTime, parameters);
 
         // Initialize RabbitMQ connector for eShopOnContainers.
         // TODO: Replace this with a more generic one.
         RabbitMQConnector rabbitMQConnector = RabbitMQConnector.getInstance();
         rabbitMQConnector.listenToeShopEvents();
 
-        tool.initCEP();
+        hawkEDA.initCEP();
 
         RabbitMQConnector.getInstance().publishEvent(ScenarioInterface.ScenarioInitEvent);
-        scenarioInterface.registerCEPQueries(parameters, tool.cep);
+        scenarioInterface.registerCEPQueries(parameters, hawkEDA.cep);
         scenarioInterface.initScenario(parameters);
 
         try {

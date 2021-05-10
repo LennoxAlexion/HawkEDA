@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import logger.WriteLog;
-import scenario.interfaces.ScenarioInterface;
-import utilities.StopToolExecution;
+import utilities.StopHawkEDAExecution;
 
 import java.util.HashSet;
 
@@ -64,6 +63,6 @@ public class CheckoutOutOfStockResult implements UpdateListener {
         JSONObject resultLogObj = new JSONObject();
         resultLogObj.put("Out of stock Items Ordered", countInvalidOrders);
         WriteLog.writeResultToLog(resultLogObj);
-        StopToolExecution.getInstance().stopExecution();
+        StopHawkEDAExecution.getInstance().stopExecution();
     }
 }
