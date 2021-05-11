@@ -73,7 +73,7 @@ Format of the log files:
 
 ## Built Using
 * [Esper](https://www.espertech.com/esper/) - Complex Event Processor
-* [YCSB](https://github.com/brianfrankcooper/YCSB/blob/master/core/src/main/java/site/ycsb/generator/NumberGenerator.java) - Distribution generator for the workload
+* [YCSB](https://github.com/brianfrankcooper/YCSB/tree/master/core/src/main/java/site/ycsb/generator) - Distribution generator for the workload
 * [Hawk Icon](https://iconscout.com/icons/hawk) on [Iconscout](https://iconscout.com)
 
 ## License
