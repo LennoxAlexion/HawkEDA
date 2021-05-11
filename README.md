@@ -83,5 +83,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) f
 ## Acknowledgments
 
 It could not have been possible without the guidance of:
-* Rodrigo Laigner
-* Yongluan Zhou
+* [Rodrigo Laigner](https://github.com/rnlaigner)
+* [Yongluan Zhou](https://ylzhou.github.io/)
+
