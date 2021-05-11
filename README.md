@@ -1,4 +1,4 @@
-# HawkEDA
+# <img src="/icon/HawkEDA.png" alt="HawkEDA Icon" width="80"/>
 A tool for quantifying data integrity violations in event-driven microservices.
 
 ## Getting Started
@@ -71,6 +71,7 @@ Format of the log files:
 ## Built Using
 * [Esper](https://www.espertech.com/esper/) - Complex Event Processor
 * [YCSB](https://github.com/brianfrankcooper/YCSB/blob/master/core/src/main/java/site/ycsb/generator/NumberGenerator.java) - Distribution generator for the workload
+* [Hawk Icon](https://iconscout.com/icons/hawk) on [Iconscout](https://iconscout.com)
 
 ## License
 
