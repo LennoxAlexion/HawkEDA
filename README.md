@@ -1,5 +1,8 @@
-# <img src="/icon/HawkEDA.png" alt="HawkEDA Icon" width="80"/>
+<img src="/icon/HawkEDA.png" alt="HawkEDA" width="250"/>
+
 A tool for quantifying data integrity violations in event-driven microservices.
+
+#
 
 ## Getting Started
 ### Prerequisites
