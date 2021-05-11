@@ -74,7 +74,7 @@ Format of the log files:
 ## Built Using
 * [Esper](https://www.espertech.com/esper/) - Complex Event Processor
 * [YCSB](https://github.com/brianfrankcooper/YCSB/tree/master/core/src/main/java/site/ycsb/generator) - Distribution generator for the workload
-* [Hawk Icon](https://iconscout.com/icons/hawk) on [Iconscout](https://iconscout.com)
+* [Hawk Icon](https://www.deviantart.com/qsc123951/art/Hawk-Vr-1-5-380179380) by [deviantART:qsc123951](https://www.deviantart.com/qsc123951/about)
 
 ## License
 
