@@ -59,7 +59,7 @@ public class WriteLog {
         String directoryPath = logPath.concat(scenarioName);
         File directory = new File(directoryPath);
         if (!directory.exists()) {
-            if (!directory.mkdir()) {
+            if (!directory.mkdirs()) {
                 directoryPath = logPath;
             }
         }
