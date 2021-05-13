@@ -11,6 +11,8 @@ A tool for quantifying data integrity violations in event-driven microservices.
 
 * [Maven](https://maven.apache.org/)
 
+* [Python and Matplotlib](https://matplotlib.org/3.3.3/users/installing.html) - This is needed to visualize the results
+
 To run the tool against an example event-driven application, we will separately deploy the modified version of a popular open-source application [eShopOnContainers](https://github.com/LennoxAlexion/eShopOnContainers/tree/modified-for-analysis). You can use the original project, but please take care of authentication and updating catalog items in the example scenario provided with the tool. This step can be performed after installing the tool as well.
 
 * Install [Docker Compose](https://docs.docker.com/compose/)
