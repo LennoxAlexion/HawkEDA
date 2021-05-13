@@ -58,7 +58,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                     + " Updated Items: "
                     + updatedPriceList);
             JSONObject resultLogObj = new JSONObject();
-            resultLogObj.put("Outdated Items Ordered", countOutdatedPrices);
+            resultLogObj.put("ExecutionResult", countOutdatedPrices);
             WriteLog.writeResultToLog(resultLogObj);
             StopHawkEDAExecution.getInstance().stopExecution();
         }

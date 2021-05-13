@@ -65,9 +65,9 @@ public class WriteLog {
         }
         return new FileWriter(directoryPath
                 + File.separator
-                + parameters
-                + "-"
                 + eventLogFileName
+                + "-"
+                + parameters
                 + "-"
                 + startDate
                 + ".json", false);

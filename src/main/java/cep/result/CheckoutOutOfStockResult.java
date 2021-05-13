@@ -61,7 +61,7 @@ public class CheckoutOutOfStockResult implements UpdateListener {
     }
     private void writeResultLogAndScheduleStop(){
         JSONObject resultLogObj = new JSONObject();
-        resultLogObj.put("Out of stock Items Ordered", countInvalidOrders);
+        resultLogObj.put("ExecutionResult", countInvalidOrders);
         WriteLog.writeResultToLog(resultLogObj);
         StopHawkEDAExecution.getInstance().stopExecution();
     }
