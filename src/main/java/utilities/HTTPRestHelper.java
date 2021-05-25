@@ -5,6 +5,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -65,4 +66,19 @@ public class HTTPRestHelper {
             e.printStackTrace();
         }
     }
+
+    public static void HTTPDelete(String url, String requestBody){
+
+        HttpDelete httpDelete = new HttpDelete(url);
+        try {
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpResponse response = httpClient.execute(httpDelete);
+            int statusCode = response.getStatusLine().getStatusCode();
+            log.info("HTTP Delete " + url + " Status Code: " + statusCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

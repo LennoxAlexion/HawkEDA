@@ -39,6 +39,8 @@ public class EShopHelper {
     public static final String DEFAULT_PRODUCT_NAME = "Default Product";
     public static final float DEFAULT_PRODUCT_PRICE = 10;
     public static final int DEFAULT_PRODUCT_QUANTITY = 1000;
+    public static long startTime = 0;
+    public static int processedCount = 0;
 
     public static void addCatalogItem(int productId, String productName, int quantity, float price) {
         // Add/replace the catalog item based on productId

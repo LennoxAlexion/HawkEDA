@@ -37,6 +37,16 @@ public class WriteLog {
         }
     }
 
+    public static void writeProcessingTimeToLog(JSONObject jsonObject) {
+        try {
+            BufferedWriter bufferedWriter = getWriter("ProcessingTime");
+            bufferedWriter.write(jsonObject.toString());
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static BufferedWriter getWriter(String eventLogFileName) throws IOException {
 
         String defaultLogPath = System.getProperty("user.dir") + File.separator + "logs" + File.separator;

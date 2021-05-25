@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import logger.WriteLog;
+import scenario.implementations.EShopHelper;
 import utilities.StopHawkEDAExecution;
 import java.util.HashMap;
 
@@ -49,6 +50,10 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                                 " New Price: " + updatedPriceList.get(productId));
                     }
                 }
+
+                //Calculate order checkout processing time:
+                updateCheckoutProcessingTime();
+
             } else {
                 return;
             }
@@ -63,5 +68,18 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             StopHawkEDAExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
+    }
+
+    private void updateCheckoutProcessingTime(){
+        long timeElapsedMillis = (System.currentTimeMillis() - EShopHelper.startTime);
+        EShopHelper.processedCount++;
+
+        System.out.println("Time elapsed while checking out orders (sec) " + timeElapsedMillis
+                + " Processed Orders: " + EShopHelper.processedCount);
+
+        JSONObject processingTimeJsonObj = new JSONObject();
+        processingTimeJsonObj.put("ProcessingTime", timeElapsedMillis);
+        processingTimeJsonObj.put("ProcessedOrders", EShopHelper.processedCount);
+        WriteLog.writeProcessingTimeToLog(processingTimeJsonObj);
     }
 }

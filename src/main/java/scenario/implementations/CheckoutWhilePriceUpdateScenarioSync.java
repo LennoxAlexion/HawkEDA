@@ -7,16 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import scenario.implementations.entities.BasketItem;
 import scenario.implementations.entities.CatalogItem;
 import scenario.interfaces.ScenarioInterface;
+import utilities.HTTPRestHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static scenario.implementations.EShopHelper.*;
 
 @Slf4j
-public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
+public class CheckoutWhilePriceUpdateScenarioSync implements ScenarioInterface {
 
     private List<UUID> userIds;
     private int numberOfUsers = 0;
@@ -33,6 +31,9 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     @Override
     public void initScenario(ArrayList<String> args) {
         parseArgs(args);
+
+        //Delete locks
+        HTTPRestHelper.HTTPDelete("http://localhost:5103/api/v1/Basket/1", "");
 
         //Initialize catalog items, price and stock.
         catalogItems = generateCatalogItem(catalogSize, 10000);
@@ -53,7 +54,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
             UUID basketId = UUID.randomUUID();
             ArrayList<BasketItem> basketItems = generateBasketItemsFromCatalog(basketId,
                     catalogItems, addItemToCartKeyChooser);
-            addBasketItemsToBasket(userId, basketItems);
+            EShopSyncHelper.addBasketItemsToBasket(userId, basketItems);
         }
     }
 
@@ -61,7 +62,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     public void execute(ArrayList<String> args) {
         updateItemPricesConcurrently();
         startTime = System.currentTimeMillis(); //Initialize first order checkout time
-        checkoutUsersConcurrent(userIds, log);
+        EShopSyncHelper.checkoutUsersConcurrent(userIds, log);
     }
 
     // Update the price of some products using given distribution.
@@ -85,7 +86,7 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
                 catalogItems.put(itemId, catalogItem);
 
                 log.info("Updating item price : " + itemId);
-                updateCatalogItem(catalogItem.id, catalogItem.name, catalogItem.availableStock, catalogItem.price);
+                EShopSyncHelper.updateCatalogItem(catalogItem.id, catalogItem.name, catalogItem.availableStock, catalogItem.price);
             }
 
 
