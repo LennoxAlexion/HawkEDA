@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import logger.WriteLog;
+import scenario.implementations.EShopHelper;
 import utilities.StopHawkEDAExecution;
 
 import java.util.HashSet;
@@ -32,6 +33,7 @@ public class CheckoutOutOfStockResult implements UpdateListener {
             EventDTO eventDTO = (EventDTO) event.getUnderlying();
             if ("UserCheckoutAcceptedIntegrationEvent".equals(eventDTO.getEventName())){
                 writeResultLogAndScheduleStop();
+                EShopHelper.updateCheckoutAcceptedStats();
             }
             else if ("OrderStatusChangedToPaidIntegrationEvent".equals(eventDTO.getEventName())) {
                 JSONArray itemsJsonArray = eventDTO.getMessageBody().getJSONArray("OrderStockItems");

@@ -52,7 +52,7 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
                 }
 
                 //Calculate order checkout processing time:
-                updateCheckoutProcessingTime();
+                EShopHelper.updateCheckoutAcceptedStats();
 
             } else {
                 return;
@@ -68,18 +68,5 @@ public class CheckoutWhilePriceUpdateResult implements UpdateListener {
             StopHawkEDAExecution.getInstance().stopExecution();
         }
         log.info("---------------------------------------------------------\n");
-    }
-
-    private void updateCheckoutProcessingTime(){
-        long timeElapsedMillis = (System.currentTimeMillis() - EShopHelper.startTime);
-        EShopHelper.processedCount++;
-
-        System.out.println("Time elapsed while checking out orders (sec) " + timeElapsedMillis
-                + " Processed Orders: " + EShopHelper.processedCount);
-
-        JSONObject processingTimeJsonObj = new JSONObject();
-        processingTimeJsonObj.put("ProcessingTime", timeElapsedMillis);
-        processingTimeJsonObj.put("ProcessedOrders", EShopHelper.processedCount);
-        WriteLog.writeProcessingTimeToLog(processingTimeJsonObj);
     }
 }

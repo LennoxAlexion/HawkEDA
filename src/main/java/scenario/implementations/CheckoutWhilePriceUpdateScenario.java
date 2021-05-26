@@ -60,7 +60,6 @@ public class CheckoutWhilePriceUpdateScenario implements ScenarioInterface {
     @Override
     public void execute(ArrayList<String> args) {
         updateItemPricesConcurrently();
-        startTime = System.currentTimeMillis(); //Initialize first order checkout time
         checkoutUsersConcurrent(userIds, log);
     }
 

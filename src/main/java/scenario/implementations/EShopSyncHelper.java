@@ -96,6 +96,7 @@ public class EShopSyncHelper {
             e.printStackTrace();
         }
         ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        EShopHelper.startTime = System.currentTimeMillis(); //Initialize first order checkout time
 
         for (UUID userId : userIds) {
             executorService.execute(() -> {

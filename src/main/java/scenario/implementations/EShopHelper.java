@@ -15,6 +15,7 @@ import com.yahoo.ycsb.generator.ConstantIntegerGenerator;
 import com.yahoo.ycsb.generator.NumberGenerator;
 import com.yahoo.ycsb.generator.UniformLongGenerator;
 import com.yahoo.ycsb.generator.ZipfianGenerator;
+import logger.WriteLog;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
@@ -142,6 +143,7 @@ public class EShopHelper {
             e.printStackTrace();
         }
         ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        startTime = System.currentTimeMillis(); //Initialize first order checkout time
 
         for (UUID userId : userIds) {
             executorService.execute(() -> {
@@ -198,5 +200,18 @@ public class EShopHelper {
             throw new WorkloadException("Unknown request distribution \"" + requestDistrib + "\"");
         }
         return keychooser;
+    }
+
+    public static void updateCheckoutAcceptedStats(){
+        long timeElapsedMillis = (System.currentTimeMillis() - startTime);
+        processedCount++;
+
+        System.out.println("Time elapsed while checking out orders (sec) " + timeElapsedMillis
+                + " Processed Orders: " + processedCount);
+
+        JSONObject processingTimeJsonObj = new JSONObject();
+        processingTimeJsonObj.put("ProcessingTime", timeElapsedMillis);
+        processingTimeJsonObj.put("CheckoutAcceptedCount", processedCount);
+        WriteLog.writeProcessingTimeToLog(processingTimeJsonObj);
     }
 }
