@@ -42,7 +42,7 @@ public class StopHawkEDAExecution {
             }
         };
 
-        long delay = 300000L; // 5 minutes
+        long delay = 600000L; // 10 minutes
         timer.schedule(task, delay);
     }
 }
