@@ -78,6 +78,36 @@ Format of the log files:
 * [YCSB](https://github.com/brianfrankcooper/YCSB/tree/master/core/src/main/java/site/ycsb/generator) - Distribution generator for the workload
 * [Hawk Icon](https://www.deviantart.com/qsc123951/art/Hawk-Vr-1-5-380179380) by [deviantART:qsc123951](https://www.deviantart.com/qsc123951/about)
 
+## Reference
+
+When referring to HawkEDA, please refer to the following work:
+
+```
+@inbook{10.1145/3465480.3467838,
+author = {Das, Prangshuman and Laigner, Rodrigo and Zhou, Yongluan},
+title = {HawkEDA: A Tool for Quantifying Data Integrity Violations in Event-Driven Microservices},
+year = {2021},
+isbn = {9781450385558},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3465480.3467838},
+abstract = {A microservice architecture advocates for subdividing an application into small and
+independent components, each communicating via well-defined APIs or asynchronous events,
+to allow for higher scalability, availability, and fault isolation. However, the implementation
+of substantial amount of data management logic at the application-tier and the existence
+of functional dependencies cutting across microservices create a great barrier for
+developers to reason about application safety and performance trade-offs.To fill this
+gap, this work presents HawkEDA, the first data management tool that allows practitioners
+to experiment their microservice applications with different real-world workloads
+to quantify the amount of data integrity anomalies. In our demonstration, we present
+a case study of a popular open-source event-driven microservice to showcase the interface
+through which developers specify application semantics and the flexibility of HawkEDA.},
+booktitle = {Proceedings of the 15th ACM International Conference on Distributed and Event-Based Systems},
+pages = {176–179},
+numpages = {4}
+}
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
